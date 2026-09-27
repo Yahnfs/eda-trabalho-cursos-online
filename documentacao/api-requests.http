@@ -1,0 +1,93 @@
+### =====================================================================
+### Requisições de exemplo — REST Client (VS Code) / HTTP Client (IntelliJ)
+### Execute na ordem para percorrer o fluxo completo.
+### =====================================================================
+
+@enrollment = http://localhost:8081
+@progress = http://localhost:8082
+@certificate = http://localhost:8083
+@notification = http://localhost:8084
+
+### 1. Catálogo de cursos
+GET {{enrollment}}/api/courses
+
+### 2. Criar matrícula (inicia o fluxo -> EnrollmentCreated)
+POST {{enrollment}}/api/enrollments
+Content-Type: application/json
+
+{
+  "studentId": "aluno-1",
+  "studentName": "Maria Silva",
+  "studentEmail": "maria@email.com",
+  "courseId": "EDA-101"
+}
+
+### 3. Progresso criado pelo Progress Service
+GET {{progress}}/api/progress/1
+
+### 4a. Concluir aula 1 (-> LessonCompleted)
+POST {{progress}}/api/progress/1/lessons/1/complete
+
+### 4b. Concluir aula 2
+POST {{progress}}/api/progress/1/lessons/2/complete
+
+### 4c. Concluir aula 3 (-> LessonCompleted + CourseCompleted)
+POST {{progress}}/api/progress/1/lessons/3/complete
+
+### 5. Certificado da matrícula
+GET {{certificate}}/api/certificates/enrollment/1
+
+### 6. Matrícula (deve estar CERTIFIED)
+GET {{enrollment}}/api/enrollments/1
+
+### 7. Notificações do aluno
+GET {{notification}}/api/notifications?recipient=maria@email.com
+
+### 8. Nova matrícula para testar cancelamento
+POST {{enrollment}}/api/enrollments
+Content-Type: application/json
+
+{
+  "studentId": "aluno-2",
+  "studentName": "Carlos Souza",
+  "studentEmail": "carlos@email.com",
+  "courseId": "SPRING-301"
+}
+
+### 9. Cancelar matrícula 2 (-> EnrollmentCancelled)
+POST {{enrollment}}/api/enrollments/2/cancel
+Content-Type: application/json
+
+{
+  "reason": "Mudança de planos"
+}
+
+### 10. Tentar concluir aula de matrícula cancelada (409)
+POST {{progress}}/api/progress/2/lessons/1/complete
+
+### 11. Validação (400)
+POST {{enrollment}}/api/enrollments
+Content-Type: application/json
+
+{
+  "studentId": "",
+  "studentEmail": "email-invalido",
+  "courseId": "EDA-101"
+}
+
+### 12. Retry + DLQ: e-mail @falha.com falha no Notification Service
+POST {{enrollment}}/api/enrollments
+Content-Type: application/json
+
+{
+  "studentId": "aluno-3",
+  "studentName": "Joao",
+  "studentEmail": "joao@falha.com",
+  "courseId": "JAVA-201"
+}
+
+### 13. Verificar certificado pelo código (substitua pelo código real)
+GET {{certificate}}/api/certificates/CERT-XXXXXXXXXX
+
+### 14. Health check
+GET {{enrollment}}/actuator/health
