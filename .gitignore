@@ -1,0 +1,20 @@
+# Build
+target/
+
+# Bancos SQLite gerados em tempo de execução
+data/
+*.db
+*.db-journal
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.factorypath
+
+# SO
+.DS_Store
+Thumbs.db

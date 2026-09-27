@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    POM agregador: apenas facilita compilar/testar todos os microsserviços com um único comando
+    (mvn clean verify). Cada serviço continua independente, com seu próprio pom.xml, e pode ser
+    construído isoladamente dentro da sua pasta.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>br.com.cursosonline</groupId>
+    <artifactId>eda-trabalho-cursos-online</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>eda-trabalho-cursos-online</name>
+
+    <modules>
+        <module>enrollment-service</module>
+        <module>progress-service</module>
+        <module>certificate-service</module>
+        <module>notification-service</module>
+    </modules>
+</project>

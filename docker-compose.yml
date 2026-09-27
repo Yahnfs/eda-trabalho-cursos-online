@@ -1,0 +1,98 @@
+# Sistema de Gerenciamento de Cursos Online - EDA com RabbitMQ
+#
+# Somente o broker (serviços rodando na IDE / mvn spring-boot:run):
+#   docker compose up -d rabbitmq
+#
+# Tudo em containers (broker + 4 microsserviços):
+#   docker compose up -d --build
+name: eda-cursos-online
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # RabbitMQ Management (http://localhost:15672 - admin/admin)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  enrollment-service:
+    build: ./enrollment-service
+    image: eda-cursos/enrollment-service:1.0.0
+    container_name: enrollment-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      DATA_DIR: /app/data
+    volumes:
+      - enrollment_data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  progress-service:
+    build: ./progress-service
+    image: eda-cursos/progress-service:1.0.0
+    container_name: progress-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      DATA_DIR: /app/data
+    volumes:
+      - progress_data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  certificate-service:
+    build: ./certificate-service
+    image: eda-cursos/certificate-service:1.0.0
+    container_name: certificate-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      DATA_DIR: /app/data
+    volumes:
+      - certificate_data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  notification-service:
+    build: ./notification-service
+    image: eda-cursos/notification-service:1.0.0
+    container_name: notification-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      DATA_DIR: /app/data
+    volumes:
+      - notification_data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  rabbitmq_data:
+  enrollment_data:
+  progress_data:
+  certificate_data:
+  notification_data:
