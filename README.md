@@ -272,13 +272,13 @@ Também é possível testar um serviço isoladamente: `cd progress-service && ./
 
 | Diferencial | Status | Onde |
 |-------------|--------|------|
-| Dead Letter Queue (+2) | ✅ | `courses.dlx` + 6 filas `*.dlq` — `DeadLetterSupport.java` |
-| Idempotência (+2) | ✅ | Tabela `processed_events` — `IdempotencyGuard.java` |
-| Retry com Backoff (+1) | ✅ | 1s → 2s → 4s — `spring.rabbitmq.listener.simple.retry.*` |
-| Mais de 3 serviços (+2) | ✅ | Notification Service |
-| Testes Automatizados (+2) | ✅ | 29 testes — `./mvnw verify` |
-| Containerização Completa (+2) | ✅ | Dockerfile por serviço + `docker compose up -d --build` |
-| Uso de SQLite (+1) | ✅ | Todos os serviços |
+| Dead Letter Queue | ✅ | `courses.dlx` + 6 filas `*.dlq` — `DeadLetterSupport.java` |
+| Idempotência | ✅ | Tabela `processed_events` — `IdempotencyGuard.java` |
+| Retry com Backoff | ✅ | 1s → 2s → 4s — `spring.rabbitmq.listener.simple.retry.*` |
+| Mais de 3 serviços | ✅ | Notification Service |
+| Testes Automatizados | ✅ | 29 testes — `./mvnw verify` |
+| Containerização Completa | ✅ | Dockerfile por serviço + `docker compose up -d --build` |
+| Uso de SQLite | ✅ | Todos os serviços |
 
 ---
 
